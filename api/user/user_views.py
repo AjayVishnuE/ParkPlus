@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from api.models import CustomUser
+from django.core.exceptions import ObjectDoesNotExist
 from .user_serializer import CustomUserSerializer
 from rest_framework.exceptions import APIException, AuthenticationFailed
 from django.contrib.auth.hashers import make_password, check_password
@@ -21,9 +22,19 @@ class RegistrationAPIView(APIView):
 
 class LoginAPIView(APIView):
     def post(self, request):
-        user = CustomUser.objects.filter(username=request.data['username']).first()
+        data = request.data
+        EoM = data.get('EmailOrUsername')
+        try:
+            user = CustomUser.objects.get(username = EoM)
+        except ObjectDoesNotExist:
+            user = None
+        if user is None:
+            try:
+                user = CustomUser.objects.get(email = EoM)
+            except ObjectDoesNotExist:
+                user = None
 
-        if not user:
+        if user is None:
             raise APIException('Invalid Credentials')
 
         if not user or not check_password(request.data['password'], user.password):
