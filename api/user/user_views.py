@@ -4,7 +4,7 @@ from rest_framework import status
 from api.models import CustomUser
 from django.core.exceptions import ObjectDoesNotExist
 from .user_serializer import CustomUserSerializer
-from rest_framework.exceptions import APIException, AuthenticationFailed
+from rest_framework.exceptions import APIException
 from django.contrib.auth.hashers import make_password, check_password
 
 
