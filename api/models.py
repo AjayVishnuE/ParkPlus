@@ -21,7 +21,7 @@ class Report(models.Model):
     description       = models.CharField(max_length=100)
     img               = models.ImageField(upload_to=None, height_field=None,null=True)
     created_at        = models.DateTimeField(auto_now_add=True)
-    created_by        = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='parkinglog_created_by')
+    created_by        = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='report_created_by')
 
     def __str__(self):
         return self.id
