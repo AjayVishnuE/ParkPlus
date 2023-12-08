@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-67_e=po)e28d+0dl78jp8)dx1)jov28-ox&3shb4*#wni2p5^i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["ajayvishnue.pythonanywhere.com", "http://127.0.0.1:8000/"]
+ALLOWED_HOSTS = ["ajayvishnu.pythonanywhere.com", "http://127.0.0.1:8000/"]
 
 
 # Application definition
@@ -126,7 +126,7 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
-CSRF_TRUSTED_ORIGINS = ['http://ajayvishnue.pythonanywhere.com', 'https://ajayvishnue.pythonanywhere.com',]
+CSRF_TRUSTED_ORIGINS = ['http://ajayvishnu.pythonanywhere.com', 'https://ajayvishnu.pythonanywhere.com',]
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_ALL_ORIGINS = True
