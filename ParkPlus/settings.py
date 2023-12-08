@@ -133,7 +133,7 @@ CSRF_TRUSTED_ORIGINS = ['http://ajayvishnu.pythonanywhere.com', 'https://ajayvis
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = ["*"]
+CORS_ALLOWED_ORIGINS = ["https://ajayvishnu.pythonanywhere.com"]
 CORS_ALLOW_HEADERS = [ "*"]
 CORS_EXPOSE_HEADERS = ['*']
 

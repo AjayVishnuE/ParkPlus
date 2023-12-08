@@ -7,7 +7,6 @@ from .user_serializer import CustomUserSerializer
 from rest_framework.exceptions import APIException
 from django.contrib.auth.hashers import make_password, check_password
 
-
 from .authentication import create_access_token, create_refresh_token, decode_access_token, decode_refresh_token
 
 class RegistrationAPIView(APIView):
@@ -73,3 +72,13 @@ class LogoutAPIView(APIView):
             'message': "SUCCESS"
         }
         return response
+
+
+class Profileview(APIView):
+    def post(self, request, format=None):
+        token = request.headers.get('Authorization', '').split(' ')[1]
+        user_id = decode_access_token(token)
+        print(user_id)
+        return Response({
+               'data': {},   
+               'message':'something wents wrong'},status=status.HTTP_400_BAD_REQUEST)
