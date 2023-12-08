@@ -24,6 +24,8 @@ class LoginAPIView(APIView):
     def post(self, request):
         data = request.data
         EoM = data.get('EmailOrUsername')
+        if EoM is None:
+            raise APIException('EmailOrUsername is a mandatory field.')
         try:
             user = CustomUser.objects.get(username = EoM)
         except ObjectDoesNotExist:
@@ -33,7 +35,7 @@ class LoginAPIView(APIView):
                 user = CustomUser.objects.get(email = EoM)
             except ObjectDoesNotExist:
                 user = None
-
+        print(user)
         if user is None:
             raise APIException('Invalid Credentials')
 
