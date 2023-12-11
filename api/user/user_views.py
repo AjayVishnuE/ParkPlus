@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from api.models import CustomUser
+from api.models import CustomUser,Wallet
 from django.core.exceptions import ObjectDoesNotExist
 from .user_serializer import CustomUserSerializer
 from rest_framework.exceptions import APIException
@@ -34,7 +34,7 @@ class LoginAPIView(APIView):
                 user = CustomUser.objects.get(email = EoM)
             except ObjectDoesNotExist:
                 user = None
-        print(user)
+        
         if user is None:
             raise APIException('Invalid Credentials')
 
@@ -78,7 +78,48 @@ class Profileview(APIView):
     def post(self, request, format=None):
         token = request.headers.get('Authorization', '').split(' ')[1]
         user_id = decode_access_token(token)
+        
         print(user_id)
+        queryset = CustomUser.objects.all().filter(id=user_id)
+        for i in queryset:
+            print(i.email)
+            print(i.username)
+            print(i.password)
+           
         return Response({
                'data': {},   
                'message':'something wents wrong'},status=status.HTTP_400_BAD_REQUEST)
+        
+class updateprofile(APIView):
+    
+    def get(self, request, format =None):
+        token = request.headers.get('Authorization', '').split(' ')[1]
+        user_id = decode_access_token(token)
+        
+        queryset = CustomUser.objects.filter(id=user_id)
+        return Response(CustomUserSerializer(queryset,many=True).data)
+        
+    
+    
+    def patch(self,request):
+        
+        token = request.headers.get('Authorization', '').split(' ')[1]
+        user_id = decode_access_token(token)
+        data=request.data
+        task=CustomUser.objects.filter(id=user_id)
+        serializer = CustomUserSerializer(task[0],data=data,partial=True)   
+        if not serializer.is_valid():
+            return Response({
+                'data': serializer.errors,   
+                'message':'something went wrong'},status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response({
+                            'data': serializer.data,   
+                            'message':'blog updated succesfully'},
+                            status=status.HTTP_201_CREATED)  
+        
+      
+        
+        
+    
+        
