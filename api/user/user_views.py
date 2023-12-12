@@ -1,9 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from api.models import CustomUser,Wallet
+from api.models import CustomUser,Wallet,Vehicle
 from django.core.exceptions import ObjectDoesNotExist
-from .user_serializer import CustomUserSerializer
+from .user_serializer import CustomUserSerializer,ScheduleSerializer
 from rest_framework.exceptions import APIException
 from django.contrib.auth.hashers import make_password, check_password
 
@@ -117,6 +117,41 @@ class updateprofile(APIView):
                             'data': serializer.data,   
                             'message':'blog updated succesfully'},
                             status=status.HTTP_201_CREATED)  
+        
+class addvehicle(APIView):
+    def post(self,request):
+        token = request.headers.get('Authorization', '').split(' ')[1]
+        user_id = decode_access_token(token)
+        vehicles=Vehicle.objects.filter(id=user_id)
+    
+        
+        
+        
+        
+                
+class Dashboardview(APIView):
+    def get(self,request):
+        token = request.headers.get('Authorization', '').split(' ')[1]
+        user_id = decode_access_token(token)
+        queryset = Vehicle.objects.filter(id=user_id)
+        
+        
+    
+        
+class Scheduleview(APIView):
+    def post(self,request):
+        serializer = ScheduleSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+        
+    
+        
         
       
         
