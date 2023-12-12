@@ -1,6 +1,6 @@
 from django.db import models
 import uuid
-
+import datetime
 class CustomUser(models.Model):
     username          = models.CharField(max_length=150, unique=True)
     email             = models.EmailField(unique=True)
@@ -86,5 +86,20 @@ class Transaction(models.Model):
     created_at        = models.DateTimeField(auto_now_add=True)
     created_by        = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='transaction_created_by')
     
+
+class Schedule(models.Model):
+    vehicles         =  models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='User_vehicle')
+    datescheduled    =  models.DateField()
+    start_time       =  models.TimeField()
+    end_time         =  models.TimeField()  
+    created_at       = models.DateTimeField(auto_now_add=True)
+    created_by       = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='schedule_created_by')
+    # location         =
     
+
+    
+    
+    
+    
+        
     
