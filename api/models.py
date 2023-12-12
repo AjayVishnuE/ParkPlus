@@ -28,7 +28,7 @@ class Report(models.Model):
 
 class Wallet(models.Model):
     id                = models.UUIDField(primary_key=True,editable=False,default=uuid.uuid4)
-    user_id           = models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name="wallet_user")
+    user_id           = models.OneToOneField(CustomUser, on_delete=models.CASCADE,related_name="wallet_user")
     coin              = models.IntegerField()
     created_at        = models.DateTimeField(auto_now_add=True)
     created_by        = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='wallet_created_by')
@@ -40,8 +40,7 @@ class Wallet(models.Model):
 class Vehicle(models.Model):
     id                = models.UUIDField(primary_key=True, max_length=36, default=uuid.uuid4)
     vehicle_no        = models.CharField(max_length=100)
-    vehicle_owner     = models.CharField(max_length=100)
-    user              = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='vehicle_user')    
+    vehicle_owner     = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='vehicle_user')    
     model             = models.CharField(max_length=255)
     created_at        = models.DateTimeField(auto_now_add=True)
     created_by        = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='vehicle_created_by')
@@ -88,13 +87,14 @@ class Transaction(models.Model):
     
 
 class Schedule(models.Model):
-    vehicles         =  models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='User_vehicle')
+    vehicle_id       =  models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='User_vehicle')
     datescheduled    =  models.DateField()
     start_time       =  models.TimeField()
     end_time         =  models.TimeField()  
-    created_at       = models.DateTimeField(auto_now_add=True)
-    created_by       = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='schedule_created_by')
-    # location         =
+    # features         =  models.TextField()
+    created_at       =  models.DateTimeField(auto_now_add=True)
+    created_by       =  models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='schedule_created_by')
+    # location       =  
     
 
     

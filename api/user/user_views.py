@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from api.models import CustomUser,Wallet,Vehicle
 from django.core.exceptions import ObjectDoesNotExist
-from .user_serializer import CustomUserSerializer,ScheduleSerializer
+from .user_serializer import CustomUserSerializer,ScheduleSerializer,VehicleSerializer
 from rest_framework.exceptions import APIException
 from django.contrib.auth.hashers import make_password, check_password
 
@@ -74,21 +74,14 @@ class LogoutAPIView(APIView):
         return response
 
 
-class Profileview(APIView):
-    def post(self, request, format=None):
-        token = request.headers.get('Authorization', '').split(' ')[1]
-        user_id = decode_access_token(token)
-        
-        print(user_id)
-        queryset = CustomUser.objects.all().filter(id=user_id)
-        for i in queryset:
-            print(i.email)
-            print(i.username)
-            print(i.password)
+
+        # queryset = CustomUser.objects.all().filter(id=user_id)
+        # for i in queryset:
+        #     print(i.email)
+        #     print(i.username)
+        #     print(i.password)
            
-        return Response({
-               'data': {},   
-               'message':'something wents wrong'},status=status.HTTP_400_BAD_REQUEST)
+
         
 class updateprofile(APIView):
     
@@ -117,36 +110,24 @@ class updateprofile(APIView):
                             'data': serializer.data,   
                             'message':'blog updated succesfully'},
                             status=status.HTTP_201_CREATED)  
-        
 class addvehicle(APIView):
     def post(self,request):
         token = request.headers.get('Authorization', '').split(' ')[1]
         user_id = decode_access_token(token)
-        vehicles=Vehicle.objects.filter(id=user_id)
-    
         
-        
-        
-        
+        serializer = VehicleSerializer(data=request.data)
                 
-class Dashboardview(APIView):
-    def get(self,request):
-        token = request.headers.get('Authorization', '').split(' ')[1]
-        user_id = decode_access_token(token)
-        queryset = Vehicle.objects.filter(id=user_id)
-        
-        
-    
-        
 class Scheduleview(APIView):
     def post(self,request):
         serializer = ScheduleSerializer(data=request.data)
-
+        
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
         
         
         

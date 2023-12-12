@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password, check_password
-from api.models import CustomUser,Schedule
+from api.models import CustomUser,Schedule,Vehicle
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -16,7 +16,21 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 class ScheduleSerializer(serializers.ModelSerializer):
     model=Schedule
-    fields=['vehicles','datescheduled','start_time','end_time' ]
+    fields=['vehicle_id','datescheduled','start_time','end_time']
+
+
+    def create(self, validated_data):
+        return Schedule.objects.create(**validated_data )
+    
+class VehicleSerializer(serializers.ModelSerializer):
+    model=Vehicle
+    fields=[' vehicle_owner','vehicle_no','model']
+    
+    def create(self, validated_data):
+        return Vehicle.objects.create(**validated_data )
+    
+    
+    
     
     
     
