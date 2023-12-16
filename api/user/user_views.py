@@ -1,12 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from api.models import CustomUser,Wallet,Vehicle
+from api.models import CustomUser,Wallet,Vehicle,Schedule
 from django.core.exceptions import ObjectDoesNotExist
-from .user_serializer import CustomUserSerializer,ScheduleSerializer,VehicleSerializer
+from .user_serializer import CustomUserSerializer,ScheduleSerializer,VehicleSerializer,Schedule
 from rest_framework.exceptions import APIException
 from django.contrib.auth.hashers import make_password, check_password
-
+import datetime
 from .authentication import create_access_token, create_refresh_token, decode_access_token, decode_refresh_token
 
 class RegistrationAPIView(APIView):
@@ -73,15 +73,6 @@ class LogoutAPIView(APIView):
         }
         return response
 
-
-
-        # queryset = CustomUser.objects.all().filter(id=user_id)
-        # for i in queryset:
-        #     print(i.email)
-        #     print(i.username)
-        #     print(i.password)
-           
-
         
 class updateprofile(APIView):
     
@@ -108,7 +99,7 @@ class updateprofile(APIView):
         serializer.save()
         return Response({
                             'data': serializer.data,   
-                            'message':'blog updated succesfully'},
+                            'message':'updated succesfully'},
                             status=status.HTTP_201_CREATED)  
 class addvehicle(APIView):
     def post(self,request):
@@ -117,19 +108,39 @@ class addvehicle(APIView):
         
         serializer = VehicleSerializer(data=request.data)
                 
+
+
 class Scheduleview(APIView):
-    def post(self,request):
+    def post(self, request):
         serializer = ScheduleSerializer(data=request.data)
-        
+
         if serializer.is_valid():
+           
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+                return Response({'message': 'Slot is already occupied.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+       
+class Ticketview(APIView):
+   
+    def get(self, request, schedule_id):
+        try:
+            schedule = Schedule.objects.get(pk=schedule_id)
+        except Schedule.DoesNotExist:
+            return Response({"error": "Schedule not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ScheduleSerializer(schedule)
+        return Response(serializer.data)
+    
     
     
         
-        
+        # queryset = CustomUser.objects.all().filter(id=user_id)
+        # for i in queryset:
+        #     print(i.email)
+        #     print(i.username)
+        #     print(i.password)  
         
     
         
