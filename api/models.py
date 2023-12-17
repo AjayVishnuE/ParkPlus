@@ -58,7 +58,7 @@ class Vehicle(models.Model):
     vehicle_owner     = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='vehicle_user')    
     model             = models.CharField(max_length=255)
     created_at        = models.DateTimeField(auto_now_add=True)
-    created_by        = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='vehicle_created_by')
+    # created_by        = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='vehicle_created_by')
     
 
     def __str__(self):
@@ -74,22 +74,17 @@ class Schedule(models.Model):
     datescheduled    =  models.DateField()
     start_time       =  models.TimeField()
     end_time         =  models.TimeField() 
-    extratime         = models.TimeField(default=None) 
+    extratime         = models.TimeField(null=True, blank=True) 
     created_at       =  models.DateTimeField(auto_now_add=True)
-    created_by       =  models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='schedule_created_by')
+    # created_by       =  models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='schedule_created_by')
     isverfied =         models.BooleanField(default=False)
     location        =   models.CharField(max_length=255)
 
-    @property
-    def calculate_total_duration(self):
-        if self.start_time and self.end_time:
-            duration = self.end_time - self.start_time
-            total_minutes = int(duration.total_seconds() / 60)
-            return total_minutes
-        else:
-            return 0
+    
+    
     
 
-
+    def __str__(self):
+        return self.location
 
     
