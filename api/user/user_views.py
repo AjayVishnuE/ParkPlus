@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from api.models import CustomUser,Wallet,Vehicle,Schedule
 from django.core.exceptions import ObjectDoesNotExist
-from .user_serializer import CustomUserSerializer,ScheduleSerializer,VehicleSerializer,Schedule
+from .user_serializer import CustomUserSerializer,ScheduleSerializer,VehicleSerializer,ticketserializer
 from rest_framework.exceptions import APIException
 from django.contrib.auth.hashers import make_password, check_password
 import datetime
@@ -102,16 +102,38 @@ class updateprofile(APIView):
                             'message':'updated succesfully'},
                             status=status.HTTP_201_CREATED)  
 class addvehicle(APIView):
-    def post(self,request):
+    
+    def get(self,request):
+       
+            token = request.headers.get('Authorization', '').split(' ')[1]
+            user_id = decode_access_token(token)
+            tasks=Vehicle.objects.filter( vehicle_owner=user_id)
+            serializer= VehicleSerializer(tasks,many=True)
+            
+            return Response({
+                    'data': serializer.data,   
+                    'message':'vehicle fetched succesfully'},status=status.HTTP_201_CREATED)       
+    
+    def post(self, request):
         token = request.headers.get('Authorization', '').split(' ')[1]
         user_id = decode_access_token(token)
-        
-        serializer = VehicleSerializer(data=request.data)
-                
+        data=request.data
+        data['vehicle_owner']=user_id
+        serializer = VehicleSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Scheduleview(APIView):
     def post(self, request):
+        token = request.headers.get('Authorization', '').split(' ')[1]
+        user_id = decode_access_token(token)
+        data=request.data
+        data['user']=user_id
         serializer = ScheduleSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -124,15 +146,18 @@ class Scheduleview(APIView):
        
 class Ticketview(APIView):
    
-    def get(self, request, schedule_id):
-        try:
-            schedule = Schedule.objects.get(pk=schedule_id)
-        except Schedule.DoesNotExist:
-            return Response({"error": "Schedule not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = ScheduleSerializer(schedule)
-        return Response(serializer.data)
-    
+    def get(self, request):
+        scheduler_id = request.query_params.get('scheduler_id')
+        
+        if scheduler_id:
+            try:
+                schedule_instance = Schedule.objects.get(id=scheduler_id)
+                serializer = ticketserializer(schedule_instance)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except Schedule.DoesNotExist:
+                return Response({'message': 'Schedule not found'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({'message': 'Scheduler ID not provided in query parameters'}, status=status.HTTP_400_BAD_REQUEST)
     
     
         
