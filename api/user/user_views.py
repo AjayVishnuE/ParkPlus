@@ -107,8 +107,9 @@ class AddVehicle(APIView):
             'data': serializer.data,
             'message': 'vehicle fetched successfully'
         }, status=status.HTTP_201_CREATED)
-
+    
     def post(self, request):
+        p="fvf"
         token = request.headers.get('Authorization', '').split(' ')[1]
         user_id = decode_access_token(token)
         data = request.data
