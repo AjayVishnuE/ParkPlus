@@ -1,5 +1,3 @@
-# views.py
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -109,8 +107,9 @@ class AddVehicle(APIView):
             'data': serializer.data,
             'message': 'vehicle fetched successfully'
         }, status=status.HTTP_201_CREATED)
-
+    
     def post(self, request):
+        p="fvf"
         token = request.headers.get('Authorization', '').split(' ')[1]
         user_id = decode_access_token(token)
         data = request.data
@@ -135,20 +134,20 @@ class ScheduleView(APIView):
             serializer.save()
             schedule = Schedule.objects.get(id=serializer.data['id'])
             
-            # Calculate money for scheduled duration
+           
             money = schedule.calculate_money()
             
-            # Calculate extra money for overtime
+            
             extra_money = schedule.calculate_extra_money()
             
-            # Debit money from wallet
+           
             wallet = Wallet.objects.get(user_id=user_id)
             total_money = money + extra_money
             if wallet.debit_money(total_money):
-                # Save the schedule after successful debit
+                
                 schedule.save()
                 
-                # Record the transaction for money generated for the schedule
+               
                 transaction = Transaction(user_id=user_id, amount=-total_money, transaction_type='debit')
                 transaction.save()
 
@@ -177,11 +176,7 @@ class WalletView(APIView):
         token = request.headers.get('Authorization', '').split(' ')[1]
         user_id = decode_access_token(token)
         wallet = Wallet.objects.get(user_id=user_id)
-        
-        # Filter debit transactions for the wallet
         transactions = Transaction.objects.filter(user_id=user_id, transaction_type='debit').order_by('-created_at')
-        
-        # Serialize wallet and debit transactions
         wallet_serializer = WalletSerializer(wallet)
         transactions_serializer = TransactionSerializer(transactions, many=True)
         
@@ -196,9 +191,6 @@ class WalletView(APIView):
         wallet = Wallet.objects.get(user_id=user_id)
         amount = request.data.get('amount', 0)
         wallet.add_money(amount)
-        
-        # Record the credit transaction for money added to the wallet
         transaction = Transaction(user_id=user_id, amount=amount, transaction_type='credit')
         transaction.save()
-        
         return Response({'message': 'Money added to wallet successfully'}, status=status.HTTP_200_OK)   
