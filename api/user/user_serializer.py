@@ -1,11 +1,9 @@
-# serializer.py
-
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password, check_password
 from api.models import CustomUser, Schedule, Vehicle, Wallet, Transaction
 from datetime import datetime
 
-# Serializer for CustomUser model
+
 class CustomUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -14,21 +12,21 @@ class CustomUserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'password']
 
     def create(self, validated_data):
-        # Hash the password before saving the user
+        
         validated_data['password'] = make_password(validated_data['password'])
         return super().create(validated_data)
 
-# Serializer for Vehicle model
+
 class VehicleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vehicle
         fields = ['id', 'vehicle_owner', 'vehicle_no', 'model']
 
     def create(self, validated_data):
-        # Create a new vehicle instance
+        
         return Vehicle.objects.create(**validated_data)
 
-# Serializer for Schedule model
+
 class ScheduleSerializer(serializers.ModelSerializer):
     money = serializers.SerializerMethodField()
     extra_money = serializers.SerializerMethodField()
@@ -38,7 +36,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'vehicle_id', 'datescheduled', 'start_time', 'end_time', 'location', 'money', 'extra_money']
 
     def validate(self, data):
-        # Check for overlapping schedules
+        
         existing_schedules = Schedule.objects.filter(
             datescheduled=data['datescheduled'],
             location=data['location'],
@@ -70,19 +68,19 @@ class ScheduleSerializer(serializers.ModelSerializer):
         return overlap
 
     def create(self, validated_data):
-        # Create a new schedule instance
+       
         validated_data['isverfied'] = True
         return Schedule.objects.create(**validated_data)
 
     def get_money(self, schedule):
-        # Calculate and return the money for scheduled duration
+       
         return schedule.calculate_money()
 
     def get_extra_money(self, schedule):
-        # Calculate and return the extra money for overtime
+       
         return schedule.calculate_extra_money()
 
-# Serializer for Ticket model
+
 class TicketSerializer(serializers.ModelSerializer):
     duration_minutes = serializers.SerializerMethodField()
     vehicle = serializers.SerializerMethodField()
@@ -92,7 +90,7 @@ class TicketSerializer(serializers.ModelSerializer):
         fields = ['user', 'vehicle_id', 'datescheduled', 'start_time', 'end_time', 'location', 'duration_minutes', 'vehicle']
 
     def get_vehicle(self, schedule):
-        # Get vehicle details for the schedule
+        
         if schedule.vehicle_id:
             return schedule.vehicle_id.model, schedule.vehicle_id.vehicle_no
         return None
@@ -109,26 +107,26 @@ class TicketSerializer(serializers.ModelSerializer):
 
         return 0
 
-# Serializer for Wallet model
+
 class WalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallet
         fields = ['id', 'user_id', 'coin']
 
     def update(self, instance, validated_data):
-        # Update method to handle updating the wallet
+        
         instance.coin = validated_data.get('coin', instance.coin)
         instance.save()
         return instance
 
-# Serializer for Transaction model
+
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = ['id', 'user_id', 'amount', 'transaction_type', 'created_at']
 
     def to_representation(self, instance):
-        # Customize the representation of the transaction
+       
         representation = super().to_representation(instance)
         representation['is_credit'] = instance.amount > 0
         return representation
